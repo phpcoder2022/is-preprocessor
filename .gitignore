@@ -3,6 +3,9 @@
 node_modules/
 misc/
 dist/[!s]*/
+src/
+tests/
+code-for-preprocess/
 preprocessed-code/
 .ts-node/
 *.swp
