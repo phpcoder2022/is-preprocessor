@@ -2,7 +2,7 @@
 .idea/
 node_modules/
 misc/
-dist/
+dist/[!s]*/
 preprocessed-code/
 .ts-node/
 *.swp
