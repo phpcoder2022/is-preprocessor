@@ -13,7 +13,7 @@ export const processCalls = (jsCode: string): string => {
       + jsCode.slice(indexes.inner.start, indexes.inner.end);
     currentIndex = indexes.outer.end;
   });
-  if (currentIndex) processedCode += jsCode.slice(currentIndex);
+  processedCode += jsCode.slice(currentIndex);
   return processedCode;
 };
 
