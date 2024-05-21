@@ -1,5 +1,5 @@
 import { ParseError } from './errors';
-import { WannabeNode, filterAst, isArr, isWannabeNode, parse } from './main';
+import { filterAst, isNode, parse } from './main';
 
 /** @throws {ParseError} If declaration with replacingFunc not found */
 export const processFileIs = (jsCode: string): string => {
@@ -8,27 +8,26 @@ export const processFileIs = (jsCode: string): string => {
 };
 
 /** @throws {ParseError} If declaration not found */
-const findDeclarationOfIs = (jsCode: string): WannabeNode => {
+const findDeclarationOfIs = (jsCode: string) => {
   const ast = parse(jsCode);
   const declarationOfIs = filterAst(ast, node => {
-    if (!(node.type === 'FunctionDeclaration' && 'id' in node)) return false;
-    const { id } = node;
-    if (!(isWannabeNode(id) && id.type === 'Identifier' && 'name' in id)) return false;
-    const { name } = id;
-    return name === 'is';
+    if (!(node.type === 'FunctionDeclaration' && node.id?.name === 'is')) return false;
+    return node;
   })[0];
   if (!declarationOfIs) throw new ParseError('declaration of `is` not found', { jsCode });
   return declarationOfIs;
 };
 
 /** @throws {ParseError} If replacingFunc not found */
-const deleteReplacingFunc = (jsCode: string, declarationOfIs: WannabeNode): string => {
+const deleteReplacingFunc = (
+  jsCode: string,
+  declarationOfIs: ReturnType<typeof findDeclarationOfIs>,
+): string => {
   const replacingFunc = filterAst(declarationOfIs, node => {
-    if (!(isWannabeNode(node) && node.type === 'ArrowFunctionExpression' && 'params' in node)) return false;
-    const { params } = node;
-    return Boolean(isArr(params) && params.find(item => (
-      isWannabeNode(item) && 'name' in item && item.name === 'returnToCompile'
-    )));
+    if (!(node.type === 'ArrowFunctionExpression')) return false;
+    return node.params.find(item => (
+      isNode(item) && 'name' in item && item.name === 'returnToCompile'
+    )) ? node : false;
   })[0];
   if (!replacingFunc) {
     throw new ParseError(

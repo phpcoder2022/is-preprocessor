@@ -1,5 +1,6 @@
+import { CallExpression, Identifier } from 'acorn';
 import { ParseError } from './errors';
-import { ReplacingIndexes, WannabeNode, filterAst, isArr, isWannabeNode, parse } from './main';
+import { ReplacingIndexes, AnyNode, filterAst, isNode, parse } from './main';
 
 /** @throws {ParseError} If found calls of replacing func haven't second argument */
 export const processCalls = (jsCode: string): string => {
@@ -16,51 +17,41 @@ export const processCalls = (jsCode: string): string => {
   return processedCode;
 };
 
-const findIsCalls = (jsCode: string): WannabeNode[] => {
+const findIsCalls = (jsCode: string): CallExpression[] => {
   const ast = parse(jsCode);
   // console.dir(ast, { depth: 20 });
   return filterAst(ast, node => {
-    if (!(node.type === 'CallExpression' && 'callee' in node)) return false;
-    const { callee } = node;
-    return !!(isWannabeNode(callee) && filterAst(callee, findIdentifierIs).length);
+    if (!(node.type === 'CallExpression')) return false;
+    return filterAst(node.callee, findIdentifierIs).length ? node : false;
   });
 };
 
-const findIdentifierIs = (node: WannabeNode): boolean => {
-  if (!(node.type === 'Identifier' && 'name' in node)) return false;
-  return node.name === 'is';
+const findIdentifierIs = (node: AnyNode): Identifier | false => {
+  return node.type === 'Identifier' && node.name === 'is' ? node : false;
 };
 
-const findReplacingFuncCalls = (isCallExpr: WannabeNode): WannabeNode[] => {
-  if (!('arguments' in isCallExpr)) return [];
+const findReplacingFuncCalls = (isCallExpr: CallExpression): CallExpression[] => {
   const { arguments: callArguments } = isCallExpr;
-  if (!(isArr(callArguments))) return [];
-
   const arrowFunc = callArguments[0];
-  if (!(isWannabeNode(arrowFunc)
-    && arrowFunc.type === 'ArrowFunctionExpression'
-    && ('params' in arrowFunc && 'body' in arrowFunc)
-  )) return [];
+  if (!(isNode(arrowFunc) && arrowFunc.type === 'ArrowFunctionExpression')) return [];
   const { params, body } = arrowFunc;
-  if (!(isArr(params) && isWannabeNode(body))) return [];
   const secondParam = params[1];
-  if (!(isWannabeNode(secondParam) && secondParam.type === 'Identifier' && 'name' in secondParam)) {
+  if (!(isNode(secondParam) && secondParam.type === 'Identifier')) {
     return [];
   }
 
   const { name: replacingFuncName } = secondParam;
   if (!(typeof replacingFuncName === 'string')) return [];
   return filterAst(body, node => {
-    if (!(node.type === 'CallExpression' && 'callee' in node)) return false;
-    const { callee } = node;
-    return !!((isWannabeNode(callee) && callee.type === 'Identifier')
-      && ('name' in callee && callee.name === replacingFuncName)
-    );
+    if (!(node.type === 'CallExpression')) return false;
+    return (node.callee.type === 'Identifier'
+      && node.callee.name === replacingFuncName
+    ) ? node : false;
   });
 };
 
 /** @throws {ParseError} If found call of replacing func haven't second argument */
-const getReplacingIndexes = (replaceCall: WannabeNode, jsCode: string): ReplacingIndexes => {
+const getReplacingIndexes = (replaceCall: CallExpression, jsCode: string): ReplacingIndexes => {
   const result = findReplacingIndexes(replaceCall);
   if (!result) {
     throw new ParseError(
@@ -71,12 +62,10 @@ const getReplacingIndexes = (replaceCall: WannabeNode, jsCode: string): Replacin
   return result;
 };
 
-const findReplacingIndexes = (replaceCall: WannabeNode): ReplacingIndexes | null => {
-  if (!(replaceCall.type === 'CallExpression' && 'arguments' in replaceCall)) return null;
+const findReplacingIndexes = (replaceCall: CallExpression): ReplacingIndexes | null => {
   const { arguments: callArguments } = replaceCall;
-  if (!isArr(callArguments)) return null;
   const secondArg = callArguments[1];
-  if (!isWannabeNode(secondArg)) return null;
+  if (!isNode(secondArg)) return null;
   return {
     outer: { start: replaceCall.start, end: replaceCall.end },
     inner: { start: secondArg.start, end: secondArg.end },
