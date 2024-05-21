@@ -1,0 +1,14 @@
+{
+  "name": "is-preprocessor",
+  "version": "0.0.1",
+  "description": "Preprocess js code after tsc for excluding of new object creating when run type-guards",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "phpcoder2022",
+    "email": "phpcoder2022@yandex.ru"
+  },
+  "license": "MIT"
+}

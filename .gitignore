@@ -1,0 +1,12 @@
+.vscode/
+.idea/
+node_modules/
+misc/
+.ts-node/
+*.swp
+*.zip
+*.log
+*.backup.*
+*.cancel.*
+*.service.*
+*.message.*
