@@ -1,6 +1,6 @@
 {
   "name": "is-preprocessor",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Preprocess js code after tsc for excluding of new object creating when run type-guards",
   "main": "./dist/src/index.js",
   "scripts": {
