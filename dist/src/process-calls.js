@@ -33,7 +33,8 @@ const findIdentifierIs = (node) => {
 const findReplacingFuncCalls = (isCallExpr) => {
     const { arguments: callArguments } = isCallExpr;
     const arrowFunc = callArguments[0];
-    if (!((0, main_1.isNode)(arrowFunc) && arrowFunc.type === 'ArrowFunctionExpression'))
+    if (!((0, main_1.isNode)(arrowFunc)
+        && (arrowFunc.type === 'ArrowFunctionExpression' || arrowFunc.type === 'FunctionExpression')))
         return [];
     const { params, body } = arrowFunc;
     const secondParam = params[1];
