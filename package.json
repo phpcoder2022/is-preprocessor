@@ -4,6 +4,9 @@
   "description": "Preprocess js code after tsc for excluding of new object creating when run type-guards",
   "main": "dist/index.js",
   "scripts": {
+    "compile": "tsc -d",
+    "run": "node dist/tests/just-launch.js",
+    "comp-and-run": "npm run compile && npm run run",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": {
@@ -17,6 +20,7 @@
   "devDependencies": {
     "@babel/core": "^7.23.2",
     "@babel/preset-env": "^7.23.2",
+    "@types/espree": "^10.0.0",
     "@types/node": "^20.12.2",
     "@typescript-eslint/eslint-plugin": "~7.2.0",
     "@typescript-eslint/parser": "~7.2.0",

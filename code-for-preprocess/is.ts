@@ -9,7 +9,6 @@ export function is<Wide, Narrow extends Wide>(
 ) {
   return (value: Wide): value is Narrow => predicate(
     value,
-    /* WEBPACK_DEL => returnToCompile */
     // Второй аргумент используется для препроцессинга после tsc
     // На него заменяется весь вызов функции в рантайме
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
