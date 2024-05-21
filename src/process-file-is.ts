@@ -1,11 +1,13 @@
 import { ParseError } from './errors';
-import { WannabeNode, filterAst, isWannabeNode, parse } from './main';
+import { WannabeNode, filterAst, isArr, isWannabeNode, parse } from './main';
 
+/** @throws {ParseError} If declaration with replacingFunc not found */
 export const processFileIs = (jsCode: string): string => {
   const declarationOfIs = findDeclarationOfIs(jsCode);
   return deleteReplacingFunc(jsCode, declarationOfIs);
 };
 
+/** @throws {ParseError} If declaration not found */
 const findDeclarationOfIs = (jsCode: string): WannabeNode => {
   const ast = parse(jsCode);
   const declarationOfIs = filterAst(ast, node => {
@@ -19,11 +21,12 @@ const findDeclarationOfIs = (jsCode: string): WannabeNode => {
   return declarationOfIs;
 };
 
+/** @throws {ParseError} If replacingFunc not found */
 const deleteReplacingFunc = (jsCode: string, declarationOfIs: WannabeNode): string => {
   const replacingFunc = filterAst(declarationOfIs, node => {
     if (!(isWannabeNode(node) && node.type === 'ArrowFunctionExpression' && 'params' in node)) return false;
     const { params } = node;
-    return Boolean(params instanceof Array && params.find(item => (
+    return Boolean(isArr(params) && params.find(item => (
       isWannabeNode(item) && 'name' in item && item.name === 'returnToCompile'
     )));
   })[0];
