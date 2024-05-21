@@ -35,3 +35,7 @@ export const isEntryWithManyReplacingFunc = is<unknown, Entry>((value, replace) 
     ? isEntry(value) ? replace(value, value) : isnt
     : isEntry(value) ? replace(value, value) : isnt
 ));
+
+export const isEntryWithRegularFunction = is<unknown, Entry>(function (value, replace) {
+  return isEntry(value) ? replace(value, value) : isnt;
+});

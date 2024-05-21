@@ -33,7 +33,9 @@ const findIdentifierIs = (node: AnyNode): Identifier | false => {
 const findReplacingFuncCalls = (isCallExpr: CallExpression): CallExpression[] => {
   const { arguments: callArguments } = isCallExpr;
   const arrowFunc = callArguments[0];
-  if (!(isNode(arrowFunc) && arrowFunc.type === 'ArrowFunctionExpression')) return [];
+  if (!(isNode(arrowFunc)
+    && (arrowFunc.type === 'ArrowFunctionExpression' || arrowFunc.type === 'FunctionExpression')
+  )) return [];
   const { params, body } = arrowFunc;
   const secondParam = params[1];
   if (!(isNode(secondParam) && secondParam.type === 'Identifier')) {
