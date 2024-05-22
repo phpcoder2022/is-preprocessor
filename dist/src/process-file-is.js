@@ -24,7 +24,8 @@ const findDeclarationOfIs = (jsCode) => {
 /** @throws {ParseError} If replacingFunc not found */
 const deleteReplacingFunc = (jsCode, declarationOfIs) => {
     const replacingFunc = (0, main_1.filterAst)(declarationOfIs, node => {
-        if (!(node.type === 'ArrowFunctionExpression'))
+        if (!(node.type === 'ArrowFunctionExpression'
+            || node.type === 'FunctionExpression'))
             return false;
         return node.params.find(item => ((0, main_1.isNode)(item) && 'name' in item && item.name === 'returnToCompile')) ? node : false;
     })[0];
