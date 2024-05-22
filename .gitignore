@@ -8,6 +8,9 @@ tests/
 code-for-preprocess/
 preprocessed-code/
 .ts-node/
+tsconfig.json
+.eslint*
+.editorconfig
 *.swp
 *.zip
 *.log
