@@ -24,7 +24,9 @@ const deleteReplacingFunc = (
   declarationOfIs: ReturnType<typeof findDeclarationOfIs>,
 ): string => {
   const replacingFunc = filterAst(declarationOfIs, node => {
-    if (!(node.type === 'ArrowFunctionExpression')) return false;
+    if (!(node.type === 'ArrowFunctionExpression'
+      || node.type === 'FunctionExpression'
+    )) return false;
     return node.params.find(item => (
       isNode(item) && 'name' in item && item.name === 'returnToCompile'
     )) ? node : false;
